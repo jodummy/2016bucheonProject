@@ -1,0 +1,100 @@
+2017-07-27 09:50:15,104 [Worker-2] ERROR o.e.m.c.i.p.r.ProjectRegistryReader - Can't read workspace state
+java.io.InvalidClassException: org.eclipse.m2e.core.internal.project.registry.BasicProjectRegistry; local class incompatible: stream classdesc serialVersionUID = 5542512601401896748, local class serialVersionUID = 6232274446642339434
+	at java.io.ObjectStreamClass.initNonProxy(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readNonProxyDesc(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readClassDesc(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readOrdinaryObject(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readObject0(Unknown Source) ~[na:1.8.0_131]
+	at java.io.ObjectInputStream.readObject(Unknown Source) ~[na:1.8.0_131]
+	at org.eclipse.m2e.core.internal.project.registry.ProjectRegistryReader.readWorkspaceState(ProjectRegistryReader.java:100) ~[org.eclipse.m2e.core_1.7.0.20160603-1933.jar:na]
+	at org.eclipse.m2e.core.internal.project.registry.ProjectRegistryManager.<init>(ProjectRegistryManager.java:164) [org.eclipse.m2e.core_1.7.0.20160603-1933.jar:na]
+	at org.eclipse.m2e.core.internal.MavenPluginActivator.start(MavenPluginActivator.java:211) [org.eclipse.m2e.core_1.7.0.20160603-1933.jar:na]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:771) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl$3.run(BundleContextImpl.java:1) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at java.security.AccessController.doPrivileged(Native Method) [na:1.8.0_131]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.startActivator(BundleContextImpl.java:764) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.start(BundleContextImpl.java:721) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.startWorker0(EquinoxBundle.java:936) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.startWorker(EquinoxBundle.java:319) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.container.Module.doStart(Module.java:571) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.container.Module.start(Module.java:439) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.framework.util.SecureAction.start(SecureAction.java:454) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:107) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.classpath.ClasspathManager.findLocalClass(ClasspathManager.java:531) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.findLocalClass(ModuleClassLoader.java:324) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findLocalClass(BundleLoader.java:320) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.sources.SingleSourcePackage.loadClass(SingleSourcePackage.java:36) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClassInternal(BundleLoader.java:391) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:345) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:337) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:160) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at java.lang.ClassLoader.loadClass(Unknown Source) [na:1.8.0_131]
+	at java.lang.Class.forName0(Native Method) [na:1.8.0_131]
+	at java.lang.Class.forName(Unknown Source) [na:1.8.0_131]
+	at org.springframework.ide.eclipse.maven.MavenCorePlugin.isPresent(MavenCorePlugin.java:57) [org.springframework.ide.eclipse.maven_3.7.3.201602250914-RELEASE.jar:na]
+	at org.springframework.ide.eclipse.maven.MavenCorePlugin.<clinit>(MavenCorePlugin.java:52) [org.springframework.ide.eclipse.maven_3.7.3.201602250914-RELEASE.jar:na]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) [na:1.8.0_131]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source) [na:1.8.0_131]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source) [na:1.8.0_131]
+	at java.lang.reflect.Constructor.newInstance(Unknown Source) [na:1.8.0_131]
+	at java.lang.Class.newInstance(Unknown Source) [na:1.8.0_131]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.loadBundleActivator(BundleContextImpl.java:755) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.BundleContextImpl.start(BundleContextImpl.java:706) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.startWorker0(EquinoxBundle.java:936) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.framework.EquinoxBundle$EquinoxModule.startWorker(EquinoxBundle.java:319) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.container.Module.doStart(Module.java:571) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.container.Module.start(Module.java:439) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.framework.util.SecureAction.start(SecureAction.java:454) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.hooks.EclipseLazyStarter.postFindLocalClass(EclipseLazyStarter.java:107) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.classpath.ClasspathManager.findLocalClass(ClasspathManager.java:531) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.findLocalClass(ModuleClassLoader.java:324) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findLocalClass(BundleLoader.java:320) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClassInternal(BundleLoader.java:395) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:345) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.BundleLoader.findClass(BundleLoader.java:337) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.osgi.internal.loader.ModuleClassLoader.loadClass(ModuleClassLoader.java:160) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at java.lang.ClassLoader.loadClass(Unknown Source) [na:1.8.0_131]
+	at org.eclipse.osgi.internal.framework.EquinoxBundle.loadClass(EquinoxBundle.java:568) [org.eclipse.osgi_3.10.2.v20150203-1939.jar:na]
+	at org.eclipse.core.internal.registry.osgi.RegistryStrategyOSGI.createExecutableExtension(RegistryStrategyOSGI.java:174) [org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar:na]
+	at org.eclipse.core.internal.registry.ExtensionRegistry.createExecutableExtension(ExtensionRegistry.java:905) [org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar:na]
+	at org.eclipse.core.internal.registry.ConfigurationElement.createExecutableExtension(ConfigurationElement.java:243) [org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar:na]
+	at org.eclipse.core.internal.registry.ConfigurationElementHandle.createExecutableExtension(ConfigurationElementHandle.java:55) [org.eclipse.equinox.registry_3.5.400.v20140428-1507.jar:na]
+	at org.eclipse.ui.internal.WorkbenchPlugin$1.run(WorkbenchPlugin.java:294) [org.eclipse.ui.workbench_3.106.2.v20150204-1030.jar:na]
+	at org.eclipse.swt.custom.BusyIndicator.showWhile(BusyIndicator.java:52) [org.eclipse.swt.win32.win32.x86_64_3.103.2.v20150203-1351.jar:na]
+	at org.eclipse.ui.internal.WorkbenchPlugin.createExtension(WorkbenchPlugin.java:289) [org.eclipse.ui.workbench_3.106.2.v20150204-1030.jar:na]
+	at org.eclipse.ui.internal.EarlyStartupRunnable.getExecutableExtension(EarlyStartupRunnable.java:119) [org.eclipse.ui.workbench_3.106.2.v20150204-1030.jar:na]
+	at org.eclipse.ui.internal.EarlyStartupRunnable.run(EarlyStartupRunnable.java:67) [org.eclipse.ui.workbench_3.106.2.v20150204-1030.jar:na]
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42) [org.eclipse.equinox.common_3.6.200.v20130402-1505.jar:na]
+	at org.eclipse.ui.internal.Workbench$56.run(Workbench.java:2755) [org.eclipse.ui.workbench_3.106.2.v20150204-1030.jar:na]
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54) [org.eclipse.core.jobs_3.6.1.v20141014-1248.jar:na]
+2017-07-31 14:20:12,625 [Worker-14] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: kr.co:audit:1.0.0-BUILD-SNAPSHOT @ C:\Users\gogreat\Documents\workspace7\ensighter\pom.xml.
+2017-07-31 14:20:16,160 [Worker-14] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:20:16,169 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-07-31 14:20:16,191 [Worker-14] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:20:16,193 [Worker-14] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-07-31 14:20:26,138 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:20:26,151 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-07-31 14:20:26,174 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:20:26,177 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-07-31 14:27:26,501 [Worker-20] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:27:26,505 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2017-07-31 14:27:26,510 [Worker-20] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:27:26,512 [Worker-20] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2017-07-31 14:27:48,601 [Worker-21] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:27:48,605 [Worker-21] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-07-31 14:27:48,608 [Worker-21] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-07-31 14:27:48,610 [Worker-21] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2017-08-01 11:31:28,080 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-01 11:31:28,096 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-08-01 11:31:28,107 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-01 11:31:28,109 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-08-02 15:17:13,737 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-02 15:17:13,762 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-08-02 15:17:13,777 [Worker-9] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-02 15:17:13,783 [Worker-9] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-08-02 15:25:58,712 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-02 15:25:58,736 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2017-08-02 15:25:58,747 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (MS949 actually) to copy filtered resources, i.e. build is platform dependent!
+2017-08-02 15:25:58,749 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource

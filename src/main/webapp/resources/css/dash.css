@@ -1,0 +1,40 @@
+@CHARSET "UTF-8";
+
+iframe{
+	width:100% !important;
+	height:1000px;
+	margin-top:20px;
+}
+
+/* 
+.text_sec{
+	font-size: 1.5em;
+} */
+
+.out{
+	margin: 20px 0px;
+	border:black solid 2px;
+}
+
+.btn-outline-primary {
+    color: #0275d8;
+    background-image: none !important;
+    background-color: transparent;
+    border-color: #0275d8 !important;
+    font-size: 1.2em !important;
+}
+
+
+
+.btn-outline-primary:hover a,.btn-outline-primary:hover {
+	text-decoration:none;
+	color:white !important;
+}
+
+.btn-outline-primary:hover {
+	background-color: #0275d8;
+}
+
+.highcharts-title tspan{
+	font-size:30px;
+}

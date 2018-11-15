@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="admin.management">
+	<cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
+  
+  <resultMap type="AdminMember" id="admin_maching">
+  	<result column="id" property="id"/>
+  	<result column="word" property="password"/>
+  	<result column="groupId" property="groupId"/>
+  	<result column="mail" property="mail"/>
+  	<result column="uname" property="userName"/>
+  </resultMap>
+  
+   <select id="selectReadUser" resultType="hashmap" useCache="true" resultMap="admin_maching">
+   		select id, word, groupId, mail, uname from gogreat_password
+   </select>
+  
+  <select id="selectAdminInfoList" parameterType="java.lang.String" resultMap="admin_maching">
+  	select id, word, groupid, mail, uname from gogreat_password where id = #{id}
+  </select>
+  
+   
+  <select id="chart1" parameterType="hashmap" resultType="hashmap">
+  		select TD_STAMP, count(TD_TITLE) AS COUNT from new_bucheon3 where TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+        and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') group by TD_STAMP order by TD_STAMP
+  </select>
+  
+  <select id="chart1_1" parameterType="hashmap" resultType="hashmap">
+		select TD_STAMP, count(TD_TITLE) as con from new_bucheon3 where TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')
+		group by TD_STAMP 
+		having count(TD_TITLE) = (select MAX(con) from (select TD_STAMP, count(TD_TITLE) as con from new_bucheon3
+		where TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') group by TD_STAMP))
+  </select>
+  
+  <select id="chart1_2" parameterType="hashmap" resultType="hashmap">
+		select count(TD_TITLE) as con from new_bucheon3 where TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')
+  </select>
+  
+  <select id="chart1_m" parameterType="hashmap" resultType="hashmap">
+  		select TD_STAMP, sum(COUNT) as COUNT from (select substr(TD_STAMP,1,10) as TD_STAMP , COUNT from (select TD_STAMP, count(TD_TITLE) AS COUNT from new_bucheon3 
+		where TD_STAMP like #{month}|| '%' group by TD_STAMP order by TD_STAMP)) group by TD_STAMP order by TD_STAMP
+  </select>
+  
+  <select id="chart1_1_m" parameterType="hashmap" resultType="hashmap">
+		select TD_STAMP, sum(COUNT) as CON from (select substr(TD_STAMP,1,10) as TD_STAMP , COUNT from (select TD_STAMP, count(TD_TITLE) AS COUNT from new_bucheon3 
+		where TD_STAMP like #{month}|| '%' group by TD_STAMP order by TD_STAMP)) group by TD_STAMP having sum(COUNT) = (select MAX(COUNT) from ( select TD_STAMP, sum(COUNT) as COUNT from (select substr(TD_STAMP,1,10) as TD_STAMP , COUNT from (select TD_STAMP, count(TD_TITLE) AS COUNT from new_bucheon3 
+		where TD_STAMP like #{month}|| '%' group by TD_STAMP order by TD_STAMP)) group by TD_STAMP order by TD_STAMP))
+  </select>
+  
+  <select id="chart1_2_m" parameterType="hashmap" resultType="hashmap">
+		select count(TD_TITLE) as con from new_bucheon3 where TD_STAMP like #{month}|| '%'
+  </select>
+  
+  <select id="chart2" parameterType="hashmap" resultType="hashmap">
+	 select TD_SITE, listagg(RESULT,'|') within group (order by RESULT) as RESULT, listagg(CNT,'|') within group (order by RESULT) as CON
+	 from (select TD_SITE, RESULT, count(RESULT) as CNT from NEW_BUCHEON3 
+	 WHERE TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+	 and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+	 and result != '중립' group by TD_SITE,RESULT order by TD_SITE desc) group by TD_SITE order by TD_SITE
+  </select>
+  
+  <select id="chart2_m" parameterType="hashmap" resultType="hashmap">
+   	select TD_SITE, listagg(RESULT,'|') within group (order by RESULT) as RESULT, listagg(CNT,'|') within group (order by RESULT) as CON
+	from (select TD_SITE, RESULT, count(RESULT) as CNT from NEW_BUCHEON3 
+	WHERE TD_STAMP LIKE #{month}|| '%' and result != '중립' group by TD_SITE,RESULT order by TD_SITE desc) group by TD_SITE order by TD_SITE
+  </select>
+  
+  <select id="chart2_1" parameterType="hashmap" resultType="hashmap">
+		select count(TD_TITLE) as CNT from NEW_BUCHEON3 
+		WHERE TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') and result != '중립'
+  </select>
+  
+   <select id="chart2_1_m" parameterType="hashmap" resultType="hashmap">
+		select count(TD_TITLE) as CNT from NEW_BUCHEON3 WHERE TD_STAMP LIKE #{month}|| '%' and result != '중립'
+  </select>
+  
+  
+  
+  <select id="chart3" parameterType="hashmap" resultType="hashmap">
+  		select WORD_WS,COUNT_WS from (select  WORD_WS , sum(COUNT_WS) as COUNT_WS
+		from BUCHEON_WS2 where TIME_WS between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd') group by WORD_WS) order by COUNT_WS desc
+  </select>
+  
+  <select id="chart3_m" parameterType="hashmap" resultType="hashmap">
+  	   select WORD_WS,COUNT_WS from (select  WORD_WS , sum(COUNT_WS) as COUNT_WS
+       from BUCHEON_WS2 where TIME_WS like #{month}|| '%' group by WORD_WS) order by COUNT_WS desc
+  </select>
+  
+ <select id="chart4" parameterType="hashmap" resultType="hashmap">
+<!-- select * from (select * from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from (select * from (select b.word_wt as WORD_WT, count_wt, rate, term, time_wt from (select WORD_WT from (select WORD_WT, COUNT_WT from
+(select WORD_WT , sum(COUNT_WT) as COUNT_WT from BC_WT_PAGE group by WORD_WT) order by COUNT_WT desc) 
+where (WORD_WT) not in('하게', '해서', '상세', '부터', '으로', '는데', '있는', '하는', '입니', '상세보기', '네요', '합니', '하여', '까지', '있습니다', '하기', '갤러', '리고', '하시', '하고', '천시', '어서') and rownum <![CDATA[<]]> 500
+) a,
+(select * from BC_WT_PAGE) b where a.word_wt = b.word_wt) WHERE TIME_WT between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd')) group by WORD_WT) where ROWNUM <![CDATA[<]]> 100 order by COUNT_WT desc) where ROWNUM <![CDATA[<]]> 21
+  -->
+ select * from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from (select * from BC_WT_PAGE WHERE TIME_WT between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd') and WORD_WT not in ('하게', '해서', '상세', '부터', '으로', '는데', '있는', '하는', '입니', '상세보기', '네요', '합니', '하여', '까지', '있습니다', '하기', '갤러', '리고', '하시', '하고', '바로', '백만', '기도', '천시', '어서', '지만')) group by WORD_WT order by COUNT_WT desc) where ROWNUM <![CDATA[<]]> 21
+ 
+ </select>
+  
+ <select id="chart4_m" parameterType="hashmap" resultType="hashmap">
+<!-- select * from (select * from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from (select * from (select b.word_wt as WORD_WT, count_wt, rate, term, time_wt from (select WORD_WT from (select WORD_WT, COUNT_WT from
+(select WORD_WT , sum(COUNT_WT) as COUNT_WT from BC_WT_PAGE group by WORD_WT) order by COUNT_WT desc) 
+where (WORD_WT) not in('하게', '해서', '상세', '부터', '으로', '는데', '있는', '하는', '입니', '상세보기', '네요', '합니', '하여', '까지', '있습니다', '하기', '갤러', '리고', '하시', '하고', '천시', '어서') and rownum <![CDATA[<]]> 70
+) a,
+(select * from BC_WT_PAGE) b where a.word_wt = b.word_wt) WHERE TIME_WT LIKE #{month}|| '%') group by WORD_WT) where ROWNUM <![CDATA[<]]> 100 order by COUNT_WT desc) where ROWNUM <![CDATA[<]]> 21
+ -->
+
+ select * from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from (select * from BC_WT_PAGE WHERE TIME_WT LIKE  #{month}|| '%' and WORD_WT not in ('하게', '해서', '상세', '부터', '으로', '는데', '있는', '하는', '입니', '상세보기', '네요', '합니', '하여', '까지', '있습니다', '하기', '갤러', '리고', '하시', '하고', '바로', '백만', '기도', '천시', '어서', '지만')) 
+group by WORD_WT order by COUNT_WT desc) where ROWNUM <![CDATA[<]]> 21
+ 
+
+ </select>
+ 
+   <!--   <select id="chart4" parameterType="hashmap" resultType="hashmap">
+  		select rn, WORD_WT, COUNT_WT from (select ROWNUM rn, WORD_WT, COUNT_WT from (select WORD_WT, COUNT_WT from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from BC_WT_PAGE
+		where TERM = '일' AND TIME_WT between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd')
+		and WORD_WT not like '%경기%' and WORD_WT not like '%경기도%' and WORD_WT not like '%는' 
+		and WORD_WT not like '%에서' and WORD_WT not like '%까지%' and WORD_WT not like '%나%' and WORD_WT not like '%한다%' 
+		and WORD_WT not like '%는데%' and WORD_WT not like '%다운%' and WORD_WT not like '%가%'
+		and WORD_WT not like '%보기%' and WORD_WT not like '%니다%' and WORD_WT not like '%하세요%' and WORD_WT not like '%하시%'
+		and WORD_WT not like '%부천%' and WORD_WT not like '부천시%' and WORD_WT not like '%공공%' and WORD_WT not like '%입니%'
+		and WORD_WT not like '%전화%' and WORD_WT not like '%번길%' and WORD_WT not like '%원미구%'and WORD_WT not like '%해서%'
+		and WORD_WT not like '%하게%' and WORD_WT not like '%하기%' and WORD_WT not like '%하여%' and WORD_WT not like '%부터%'
+		and WORD_WT not like '%여름%' and WORD_WT not like '%어린이%' and WORD_WT not like '%관리%' and WORD_WT not like '%운영%'
+		and WORD_WT not like '%어린이%' group by WORD_WT) order by COUNT_WT desc, WORD_WT)) where rn <![CDATA[<]]> 21
+  </select>
+  
+  <select id="chart4_m" parameterType="hashmap" resultType="hashmap">
+  		select rn, WORD_WT, COUNT_WT from (select ROWNUM rn, WORD_WT, COUNT_WT from (select WORD_WT, COUNT_WT from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from BC_WT_PAGE
+		where TERM = '일' AND TIME_WT like #{month}|| '%'
+		and WORD_WT not like '%경기%' and WORD_WT not like '%경기도%' and WORD_WT not like '%는' 
+		and WORD_WT not like '%에서' and WORD_WT not like '%까지%' and WORD_WT not like '%나%' and WORD_WT not like '%한다%' 
+		and WORD_WT not like '%는데%' and WORD_WT not like '%다운%' and WORD_WT not like '%가%'
+		and WORD_WT not like '%보기%' and WORD_WT not like '%니다%' and WORD_WT not like '%하세요%' and WORD_WT not like '%하시%'
+		and WORD_WT not like '%부천%' and WORD_WT not like '부천시%' and WORD_WT not like '%공공%' and WORD_WT not like '%입니%'
+		and WORD_WT not like '%전화%' and WORD_WT not like '%번길%' and WORD_WT not like '%원미구%' and WORD_WT not like '%해서%'
+		and WORD_WT not like '%하게%' and WORD_WT not like '%하기%' and WORD_WT not like '%하여%' and WORD_WT not like '%부터%'
+		and WORD_WT not like '%여름%' and WORD_WT not like '%어린이%' and WORD_WT not like '%관리%' and WORD_WT not like '%운영%'
+		and WORD_WT not like '%상세설명%' group by WORD_WT) order by COUNT_WT desc, WORD_WT)) where rn <![CDATA[<]]> 21
+  </select>
+   -->
+  
+  
+  <select id="chart5" parameterType="hashmap" resultType="hashmap">
+  		select TD_SITE, count(TD_TITLE) as con from new_bucheon3 
+		where TD_STAMP between to_char(to_date(#{start_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss') group by TD_SITE order by con desc
+  </select>
+  
+  <select id="chart5_m" parameterType="hashmap" resultType="hashmap">
+  		select TD_SITE, count(TD_TITLE) as con from new_bucheon3 where TD_STAMP like #{month}|| '%' group by TD_SITE order by con desc
+  </select>
+  
+  
+   <select id="chart6" parameterType="hashmap" resultType="hashmap">
+ <!--   select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select parents_wt, child_wt, count, time from (select * from bucheon_clu3 where TIME between to_char(to_date('2017-03-10','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') and count >= 15 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+union
+select * from bucheon_clu3 where TIME between to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(sysdate-1,'yyyy-mm-dd') and count >= 10 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')) 
+        where TIME between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd')) GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<=]]> 20
+ -->  	    
+  	    
+ <!-- select rn,LHS,RHS,SUPPORT,CONFIDENCE,LIFT from 
+		(select ROWNUM rn, LHS,RHS,count_su as support ,count_con as confidence,count_lift as lift from (select LHS,RHS, (su/con_su) as count_su, (con/con_su) as count_con,(lift/con_su) as count_lift  from 
+		(select LHS,RHS, sum(SUPPORT)as su 
+		,sum(CONFIDENCE) as con,sum(LIFT)as lift, 
+		count(SUPPORT) as con_su from BUCHEON_CLU2 
+		where STAMP_CLU between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd') group by LHS,RHS) order by count_su desc)) where rn <![CDATA[<]]> 21 
+  -->
+  
+  
+select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select * from bucheon_clu3
+where TIME between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd') and count <![CDATA[>=]]> 15 and child_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')  and parents_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+) GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<=]]> 20
+  
+
+  </select>
+  
+  <select id="chart6_m" parameterType="hashmap" resultType="hashmap">
+  <!-- select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select parents_wt, child_wt, count, time from (select * from bucheon_clu3 where TIME between to_char(to_date('2017-03-10','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') and count >= 150 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+union
+select * from bucheon_clu3 where TIME between to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(sysdate-1,'yyyy-mm-dd') and count >= 30 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')) 
+        where TIME LIKE #{month}|| '%') GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<=]]> 20
+  	    -->
+
+<!-- select * from (select parents_wt, child_wt, sum(count_wt) as Support from (select TIME AS TIME_CLU, PARENTS_WT, CHILD_WT, count as count_wt from bucheon_clu3 where COUNT >= 30 and (PARENTS_WT) not in ( '다면', '만화박물', '시면', '박물', '지는' ,'보이') and (child_WT) not in ('다면', '프레', '다양') 
+and time LIKE #{month}|| '%')
+GROUP by parents_wt, child_wt order by sum(count_wt) desc) where rownum <![CDATA[<]]> 21 -->
+ 	<!-- select rn,LHS,RHS,SUPPORT,CONFIDENCE,LIFT from 
+		(select ROWNUM rn, LHS,RHS,count_su as support ,count_con as confidence,count_lift as lift from (select LHS,RHS, (su/con_su) as count_su, (con/con_su) as count_con,(lift/con_su) as count_lift  from 
+		(select LHS,RHS, sum(SUPPORT)as su 
+		,sum(CONFIDENCE) as con,sum(LIFT)as lift, 
+		count(SUPPORT) as con_su from BUCHEON_CLU2 
+		where STAMP_CLU LIKE #{month}|| '%' group by LHS,RHS) order by count_su desc)) where rn <![CDATA[<]]> 21
+  -->
+
+  select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select * from bucheon_clu3
+        where TIME LIKE #{month}|| '%' and count <![CDATA[>=]]> 15 and child_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')  and parents_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+        ) GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<=]]> 20
+   
+  </select>
+  
+  <select id="chart7" parameterType="hashmap" resultType="hashmap">
+  	select rn, SITE_HC, TEXT_HC,COUNT_HC from (select ROWNUM rn, SITE_HC, TEXT_HC,COUNT_HC from (select SITE_HC, TEXT_HC,COUNT_HC  from bucheon_hc2 where TIME_HC 
+	between to_char(to_date(#{start_time},'yyyy-mm-dd'),'yyyy-mm-dd') 
+    and to_char(to_date(#{end_time},'yyyy-mm-dd'),'yyyy-mm-dd') order by COUNT_HC desc)) where rn <![CDATA[<]]>21
+  </select>
+  
+  <select id="chart7_m" parameterType="hashmap" resultType="hashmap">
+  	select rn, SITE_HC, TEXT_HC,COUNT_HC from (select ROWNUM rn, SITE_HC, TEXT_HC,COUNT_HC from (select SITE_HC, TEXT_HC,COUNT_HC from bucheon_hc2 
+    where TIME_HC LIKE #{month}|| '%' order by COUNT_HC desc)) where rn <![CDATA[<]]>21
+    
+  </select>
+  
+  
+  <select id="realtime" parameterType="hashmap" resultType="hashmap">
+  	  select TD_STAMP, count(TD_TITLE) as con from REALTIMETEST WHERE regexp_like(td_stamp,to_char(sysdate,'YYYY-MM-DD')) group by TD_STAMP order by TD_STAMP
+  </select>
+  
+  <select id="realtime_senti" parameterType="hashmap" resultType="hashmap">
+	 SELECT TD_STAMP,TD_KEY,TD_URL,TD_TITLE,
+     CASE WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 1 and 30)) THEN '긍정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 31 and 60)) THEN '긍정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 61 and 90)) THEN '긍정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 91 and 120)) THEN '긍정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 121 and 160)) THEN '긍정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 1 and 30)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 31 and 60)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 61 and 100)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 101 and 130)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 131 and 160)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 161 and 200)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 201 and 230)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 231 and 270)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 271 and 310)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 311 and 360)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 361 and 400)) THEN '부정'
+            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 401 and 460)) THEN '부정'
+       ELSE '중립'
+       END AS result FROM REALTIMETEST WHERE regexp_like(td_stamp,to_char(sysdate,'YYYY-MM-DD')) order by TD_TITLE desc
+  </select>
+
+
+  <select id="realtime_con" parameterType="hashmap" resultType="hashmap">
+  		select RESULT, count(RESULT) as con from (select TD_TITLE, RESULT from (SELECT  
+	     TD_TITLE, 
+	     CASE WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 1 and 30)) THEN '긍정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 31 and 60)) THEN '긍정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 61 and 90)) THEN '긍정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 91 and 120)) THEN '긍정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from positive_dictionary) where rn between 121 and 160)) THEN '긍정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 1 and 30)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 31 and 60)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 61 and 100)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 101 and 130)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 131 and 160)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 161 and 200)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 201 and 230)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 231 and 270)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 271 and 310)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 311 and 360)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 361 and 400)) THEN '부정'
+	            WHEN regexp_like(TD_TITLE,(select LISTAGG(DI_WORD,'|') WITHIN GROUP (ORDER  BY DI_WORD) AS word from (select rownum rn, DI_WORD from negative_dictionary) where rn between 401 and 460)) THEN '부정'
+	       ELSE '중립'
+	       END AS result FROM REALTIMETEST WHERE regexp_like(td_stamp,to_char(sysdate,'YYYY-MM-DD')))) group by RESULT
+  </select>
+  
+  <select id="realtime_td" parameterType="hashmap" resultType="hashmap">
+  		select TD_KEY, count(TD_TITLE) as CON from REALTIMETEST WHERE regexp_like(td_stamp,to_char(sysdate,'YYYY-MM-DD')) group by TD_KEY order by CON desc
+  </select>
+  
+  <select id="monthkey" parameterType="hashmap" resultType="hashmap">
+  		select rn, WORD_WT, COUNT_WT from (select ROWNUM rn, WORD_WT, COUNT_WT from (select WORD_WT, COUNT_WT from (select WORD_WT , sum(COUNT_WT) as COUNT_WT from BUCHEON_WT2
+		where TIME_WT like #{month}|| '%'
+		and WORD_WT not like '%경기%' and WORD_WT not like '%경기도%' and WORD_WT not like '%는' 
+		and WORD_WT not like '%에서' and WORD_WT not like '%까지%' and WORD_WT not like '%나%' and WORD_WT not like '%한다%' 
+		and WORD_WT not like '%는데%' and WORD_WT not like '%다운%' and WORD_WT not like '%가%'
+		and WORD_WT not like '%보기%' and WORD_WT not like '%니다%' and WORD_WT not like '%하세요%' and WORD_WT not like '%하시%'
+		and WORD_WT not like '%부천%' and WORD_WT not like '부천시%' and WORD_WT not like '%공공%' and WORD_WT not like '%입니%'
+		and WORD_WT not like '%전화%' and WORD_WT not like '%번길%' and WORD_WT not like '%원미구%'and WORD_WT not like '%해서%'
+		and WORD_WT not like '%하게%' and WORD_WT not like '%하기%' and WORD_WT not like '%하여%' and WORD_WT not like '%부터%'
+		and WORD_WT not like '%상세설명%' group by WORD_WT) order by COUNT_WT desc, WORD_WT)) where rn <![CDATA[<]]> 6
+  </select>
+  
+  <select id="monthbuzz" parameterType="hashmap" resultType="hashmap">
+  		select TIME_WT, COUNT_WT from bucheon_wt2 where TIME_WT like #{month}|| '%' and WORD_WT = #{key} order by TIME_WT
+  </select>
+    
+  <select id="monthbuzz2" parameterType="hashmap" resultType="hashmap">
+  		select sum(COUNT_WT) as CON from bucheon_wt2 where TIME_WT like #{month}|| '%' and WORD_WT = #{key} order by TIME_WT
+  </select>
+  
+   <select id="monthbuzz3" parameterType="hashmap" resultType="hashmap">
+ 		select TIME_WT, COUNT_WT from bucheon_wt2 where TIME_WT like #{month}|| '%' and WORD_WT = #{key} group by TIME_WT,COUNT_WT having COUNT_WT = 
+	(select MAX(COUNT_WT) from (select COUNT_WT from bucheon_wt2 where TIME_WT like #{month}|| '%' and WORD_WT = #{key} order by TIME_WT))
+  </select>
+  
+  <select id="monthsenti" parameterType="hashmap" resultType="hashmap">
+		select RESULT, count(RESULT) as CNT from NEW_BUCHEON3 
+		WHERE TD_STAMP LIKE #{month}|| '%' and TD_TITLE like '%' || #{key} || '%' and result != '중립' group by RESULT
+  </select>
+  
+  <select id="monthrelation" parameterType="hashmap" resultType="hashmap">
+  
+  <!-- select parents_wt, child_wt, support from( select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select parents_wt, child_wt, count, time from (select * from bucheon_clu3 where TIME between to_char(to_date('2017-03-10','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') and count >= 150 and parents_wt not in ('이지', '화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('사의', '날이', '가면', '먹고','원을', '또한', '트렌','지역', '부천시가', '세미', '영화를', '애니메', '부천에', '서코', '코스프', '부천만', '부국제', '전도', '개막식에' ,'진행','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+union
+select * from bucheon_clu3 where TIME between to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(sysdate-1,'yyyy-mm-dd') and count >= 30 and parents_wt not in ('이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('사의', '날이', '가면', '먹고','원을','또한', '트렌','지역', '부천시가','세미', '영화를','애니메', '부천에', '서코', '코스프', '부천만', '부국제', '전도', '개막식에' ,'진행','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')) 
+        where TIME LIKE #{month} || '%' and parents_wt = #{key}) GROUP by parents_wt, child_wt order by sum(count) desc)
+union all
+select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select parents_wt, child_wt, count, time from (select * from bucheon_clu3 where TIME between to_char(to_date('2017-03-10','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') and count >= 15 and parents_wt not in ('이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('사의', '날이', '가면', '먹고','원을','또한', '트렌','지역', '부천시가','세미', '영화를','애니메', '부천에', '서코', '코스프', '부천만', '부국제', '전도', '개막식에' ,'진행','부천', '부천시', '화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+union
+select * from bucheon_clu3 where TIME between to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(sysdate-1,'yyyy-mm-dd') and count >= 9 and parents_wt not in ('이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('사의', '날이', '가면', '먹고','원을','또한', '트렌','지역', '부천시가', '세미', '영화를',  '애니메', '부천에', '서코', '코스프', '부천만', '부국제', '전도', '개막식에' ,'진행','부천','부천시', '화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')) 
+        where TIME LIKE #{month} || '%' and parents_wt = #{key}) GROUP by parents_wt, child_wt order by sum(count) desc) where support <![CDATA[<]]> 40 ) where rownum <![CDATA[<]]> 21
+  -->
+ 
+<!--   select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select parents_wt, child_wt, count, time from (select * from bucheon_clu3 where TIME between to_char(to_date('2017-03-10','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') and count >= 150 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+union
+select * from bucheon_clu3 where TIME between to_char(to_date('2017-07-24','yyyy-mm-dd'),'yyyy-mm-dd') 
+		and to_char(sysdate-1,'yyyy-mm-dd') and count >= 40 and parents_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양') and child_wt not in ('화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')) 
+        where TIME LIKE #{month}|| '%' and parents_wt = #{key}) GROUP by parents_wt, child_wt order by sum(count) desc) -->
+  	   
+
+		<!--   select rn,LHS,RHS,SUPPORT,CONFIDENCE,LIFT from 
+		(select ROWNUM rn, LHS,RHS,count_su as support ,count_con as confidence,count_lift as lift from (select LHS,RHS, (su/con_su) as count_su, (con/con_su) as count_con,(lift/con_su) as count_lift  from 
+		(select LHS,RHS, sum(SUPPORT)as su 
+		,sum(CONFIDENCE) as con,sum(LIFT)as lift, 
+		count(SUPPORT) as con_su from BUCHEON_CLU2 
+		where STAMP_CLU LIKE #{month}|| '%' and RHS = #{key} group by LHS,RHS) order by count_su desc)) where rn <![CDATA[<]]> 21 
+  -->
+<!--   
+  select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select * from bucheon_clu3
+        where TIME LIKE #{month}|| '%'  and parents_wt = #{key} and count <![CDATA[>=]]> 15 ) GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<]]> 21
+  -->
+ 
+select * from (select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select * from bucheon_clu3
+        where TIME LIKE #{month} || '%' and count <![CDATA[>=]]> 15 and parents_wt = #{key} and child_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')  and parents_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+        ) GROUP by parents_wt, child_wt order by sum(count) desc) where rownum <![CDATA[<=]]> 20
+union all
+select parents_wt, child_wt, support from (select parents_wt, child_wt, sum(count) as Support from (select * from bucheon_clu3
+        where TIME LIKE #{month} || '%' and parents_wt = #{key} and child_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')  and parents_wt not in ('부천시', '심곡동', '감동스나미', '일', '친절한', '코스', '전화', '천국', '기도' ,'달래','진달','이지','화제','으로', '갤러', '까지', '는데','상세', '상세보', '상세보기', '상의', '입니다', '있는', '있습니다', '종합', '종합운동', '천시', '최상의', '하게', '하고', '하는', '합니', '다면', '입니', '프로', '만화박물', '시면', '박물', '지는' ,'보이', '프레', '다양')
+        ) GROUP by parents_wt, child_wt order by sum(count) desc) where support  <![CDATA[<]]> 15 and rownum <![CDATA[<=]]> 20) where rownum <![CDATA[<=]]> 20 order by support desc
+
+  </select>
+  
+  <select id="monthhc" parameterType="hashmap" resultType="hashmap">
+  		select rn, SITE_HC, TEXT_HC,COUNT_HC from (select ROWNUM rn, SITE_HC, TEXT_HC,COUNT_HC from (select SITE_HC, TEXT_HC,COUNT_HC from bucheon_hc2 where TIME_HC 
+		LIKE #{month}|| '%' and TEXT_HC LIKE '%' || #{key} || '%' order by COUNT_HC desc)) where rn <![CDATA[<]]>21
+  </select>
+  
+  <select id="getSentiData" parameterType="Map" resultType="kr.co.gogreat.dto.SentimentDTO">
+
+ select * from 
+ (select distinct td_title title , td_stamp time,TD_SITE site , td_url url, td_id id, result  from new_bucheon3
+ <if test="start != null and start != ''">
+ where substr(td_stamp,1,10) between to_date(#{start},'yyyy-mm-dd')
+ and to_date(#{end},'yyyy-mm-dd') and td_title like '%'||#{word}||'%' 
+ </if>
+ <if test="time != null and time !=''">
+ where substr(td_stamp,6,2) = #{time} and td_title like '%'||#{word}||'%'
+ </if> 
+) order by time desc
+  
+  </select>
+
+</mapper>

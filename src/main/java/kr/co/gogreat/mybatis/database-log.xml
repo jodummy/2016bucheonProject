@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="gogreat.database.log">
+	<cache eviction="FIFO" flushInterval="60000" size="1024" readOnly="true" />
+
+	<resultMap type="GogreatAudit" id="gogreatAudit_maching">
+		<result column="os_username" property="OSUsername"/>
+		<result column="username" property="username"/>
+		<result column="userhost" property="userHost"/>
+		<result column="terminal" property="terminal"/>
+		<result column="timestamp" property="timeStamp"/>
+		
+		<result column="owner" property="owner"/>
+		<result column="obj_name" property="objName"/>
+		<result column="action" property="action"/>
+		<result column="action_name" property="actionName"/>
+		<result column="new_owner" property="newOwner"/>
+		
+		<result column="new_name" property="newName"/>
+		<result column="obj_privilege" property="objPrivilege"/>
+		<result column="sys_privilege" property="sysPrivilege"/>
+		<result column="admin_option" property="adminOption"/>
+		<result column="grantee" property="grantee"/>
+		
+		<result column="audit_option" property="auditOption"/>
+		<result column="ses_actions" property="sesActions"/>
+		<result column="logoff_time" property="logoffTime"/>
+		<result column="logoff_lread" property="logoffLread"/>
+		<result column="logoff_pread" property="logoffPread"/>
+		
+		<result column="logoff_lwrite" property="logoffLwrite"/>
+		<result column="logoff_dlock" property="logoffDlock"/>
+		<result column="comment_text" property="commentText"/>
+		<result column="sessionid" property="sessionID"/>
+		<result column="entryid" property="entryID"/>
+		
+		<result column="statementid" property="statementID"/>
+		<result column="returncode" property="returnCode"/>
+		<result column="priv_used" property="privUsed"/>
+		<result column="client_id" property="clientID"/>
+		<result column="econtext_id" property="econtextID"/>
+		
+		<result column="session_cpu" property="sessionCPU"/>
+		<result column="extended_timestamp" property="extendedTimeStamp"/>
+		<result column="proxy_sessionid" property="proxySessionID"/>
+		<result column="global_uid" property="globalUID"/>
+		<result column="instance_number" property="instanceNumber"/>
+		
+		<result column="os_process" property="OSProcess"/>
+		<result column="transactionid" property="transactionID"/>
+		<result column="scn" property="scn"/>
+		<result column="sql_bind" property="sqlBind"/>
+		<result column="sql_text" property="sqlText"/>
+	</resultMap>  
+	
+	<select id="selectGogreatAuditList" resultMap="gogreatAudit_maching" useCache="true">
+		select
+			os_username, username, userhost, terminal, timestamp, owner, obj_name, action, action_name, 
+			new_owner, new_name, obj_privilege, sys_privilege, admin_option, grantee, audit_option, 
+			ses_actions, logoff_time, logoff_lread, logoff_pread, logoff_lwrite, logoff_dlock, comment_text, 
+			sessionid, entryid, statementid, returncode, priv_used, client_id, econtext_id, session_cpu, 
+			extended_timestamp, proxy_sessionid, global_uid, instance_number, os_process, transactionid, 
+			scn, sql_bind, sql_text 
+		from 	gogreat_audit
+	</select>
+	
+	<resultMap type="GoAudit" id="goAudit_maching">
+	    <result column="rnum" property="rnum"/>
+		<result column="active_time" property="activeTime"/>
+		<result column="ip" property="ip"/>
+		<result column="user_name" property="userName"/>
+		<result column="instance_name" property="instanceName"/>
+		<result column="userhost" property="hostName"/>
+		<result column="active_name" property="activeName"/>
+		<result column="sql_text" property="sqlText"/>
+		<result column="object_owner" property="objectOwner"/>
+		<result column="object_name" property="objectName"/>
+		<result column="sql_bind" property="sqlBind"/>
+	</resultMap>
+	
+	<select id="selectGoAuditByTableJqgrid" parameterType="hashmap" resultMap="goAudit_maching">
+		select RNUM, ACTIVE_TIME, IP, USER_NAME, INSTANCE_NAME, USERHOST, ACTIVE_NAME, SQL_TEXT, OBJECT_OWNER, OBJECT_NAME, SQL_BIND from (
+			select ROWNUM RNUM, X.ACTIVE_TIME, X.IP, X.USER_NAME, X.INSTANCE_NAME, X.USERHOST, X.ACTIVE_NAME, X.SQL_TEXT, X.OBJECT_OWNER, 
+				X.OBJECT_NAME, X.SQL_BIND from ( 
+					select /*+ INDEX-DESC(A ${table}_IDX1) */* 
+						from ${table} A 
+						where active_time >= trunc(sysdate -0, 'DD') 
+							and active_time <![CDATA[<]]> trunc(sysdate+1, 'DD') 
+							order by A.ACTIVE_TIME desc ) X 
+				where rownum <![CDATA[<=]]> 1000 ) 
+			where rnum <![CDATA[>=]]> 1
+	</select>
+	
+	<select id="selectGoAuditByTable" parameterType="hashmap" resultMap="goAudit_maching">
+		select rnum, to_char(active_time,'yyyy-mm-dd hh24:mi:ss') as active_time, ip, user_name, instance_name, userhost, active_name, sql_text, object_owner, object_name, sql_bind from (
+	        select rownum rnum, X.active_time, X.ip, X.user_name, X.instance_name, X.userhost, X.active_name, X.sql_text, X.object_owner, 
+	            X.object_name, X.sql_bind from (
+	                select /*+ INDEX-DESC(A ${table}_IDX1) */* 
+	                    from ${table} A 
+	                    where active_time between to_date(#{sdate} || #{time1}, 'YYYY/MM/DD HH24:MI:SS') and
+	                        to_date(#{edate} || #{time2}, 'YYYY/MM/DD HH24:MI:SS') 
+		<if test="activeName != null">
+			and active_name = #{activeName} 
+		</if>
+		<if test="userName != null">
+			and user_name = #{userName}
+		</if> 
+		<if test="objectName != null">
+			and object_name like '%' || #{objectName} || '%' 
+		</if>
+		<if test="ipAddress != null">
+		    and ip = #{ipAddress} 
+		</if>
+		<if test="searchOption != null">
+			<if test="searchText != null">
+				and ${searchOption} like '%' || #{searchText} || '%' 
+			</if>
+		</if>
+			 			order by A.active_time desc ) X 
+         		where rownum <![CDATA[<=]]> 1000 ) 
+         where rnum >= 1
+	</select>
+	
+	<select id="selectTotalActiveTime" parameterType="hashmap" resultType="int">
+		select	 count(active_time) 
+			from 	${table} 
+			where 	active_time between to_date(#{sdate} || #{time1}, 'YYYY/MM/DD HH24:MI:SS') 
+				and to_date(#{edate} || #{time2}, 'YYYY/MM/DD HH24:MI:SS') 
+				
+		<if test="activeName != null">
+			and active_name = #{activeName} 
+		</if>
+		<if test="userName != null">
+			and user_name = #{userName} 
+		</if> 
+		<if test="objectName != null">
+			and object_name = #{objectName} 
+		</if>
+	</select>
+	
+	<resultMap type="DBInfo" id="dbInfo_maching">
+		<result column="db_name" property="dbName"/>
+		<result column="instance_name" property="instanceName"/>
+		<result column="host_name" property="hostName"/>
+		<result column="ip_address" property="ipAddress"/>
+		<result column="port" property="port"/>
+		<result column="release" property="release"/>
+		<result column="dblink" property="dbLink"/>
+		<result column="table_name" property="tableName"/>
+		<result column="dbid" property="dbid" />
+	</resultMap>
+	
+	<select id="selectDBInfoByInstanceName" parameterType="java.lang.String" resultMap="dbInfo_maching">
+		select db_name, instance_name, host_name, ip_address, port, release, dblink, table_name, dbid from gogreat_db_list where instance_name = #{instanceName}
+	</select>
+	
+	<select id="selectDBInfoList" resultMap="dbInfo_maching" useCache="true">
+		select	db_name, instance_name, host_name, ip_address, port, release, dblink, table_name, dbid  
+			from	gogreat_db_list order by dbid
+	</select>
+	
+	<select id="selectDBInfoByDBName" parameterType="java.lang.String" resultMap="dbInfo_maching">
+		select	
+				db_name, instance_name, host_name, ip_address, port, release, dblink, table_name, dbid  
+			from	gogreat_db_list 
+			where	db_name = #{dbName}
+	</select>
+	
+	<insert id="insertdbListByProcedure" statementType="CALLABLE" parameterType="DBInfo">
+		{ call create_targetdb( 
+				#{dbName, mode=IN, jdbcType=VARCHAR}, #{instanceName, mode=IN, jdbcType=VARCHAR}, 
+				#{hostName, mode=IN, jdbcType=VARCHAR}, #{ipAddress, mode=IN, jdbcType=VARCHAR}, 
+				#{port, mode=IN, jdbcType=VARCHAR}, #{release, mode=IN, jdbcType=VARCHAR} 
+			)
+		}
+	</insert>
+	
+	<delete id="deleteProcedureDBList">
+		{ call drop_targetdb(
+				#{dbName, mode=IN, jdbcType=VARCHAR}, #{ipAddress, mode=IN, jdbcType=VARCHAR} 
+			)
+		}
+	</delete>
+	
+	
+	
+	<select id="selectIPChart" resultType="hashmap" useCache="true">
+		select ip_address, total_count from gogreat_ip_number
+	</select>
+	
+	
+	<select id="selectDBLogListBySearch">
+	   select rnum, active_name, ip, user_name, instance_name, userhost, active_name, sql_text, object_name, sql_bind 
+	       from ( 
+	           select rownum rnum, X.active_time, X.ip, X.user_name, X.instance_name, X.userhost, X.active_name, X.sql_text, 
+	               X.object_owner, X.object_name, X.sql_bind from ( 
+	               select /*+ INDEX-DESC(A ${table}_IDX1 */* 
+	                   from ${table} A 
+	                   where ${searchOption} like '%' || #{searchText} || '%' 
+	                   <if test="activeName != null">
+	                       and active_name = #{activeName} 
+	                   </if>
+	                   <if test="userName != null">
+	                       and user_name = #{userName} 
+	                   </if>
+	                   <if test="objectName != null">
+	                       and object_name = #{objectName} 
+	                   </if>
+	                   order by A.active_time desc ) X 
+	               where rownum <![CDATA[<=]]> 1000 ) 
+	       where rnum <![CDATA[>=]]> 1
+	</select>
+	
+	
+     <resultMap type="GoAudit" id="goAudit_maching2">
+        <result column="active_time" property="activeTime"/>
+        <result column="ip" property="ip"/>
+        <result column="user_name" property="userName"/>
+        <result column="instance_name" property="instanceName"/>
+        <result column="userhost" property="hostName"/>
+        <result column="active_name" property="activeName"/>
+        <result column="sql_text" property="sqlText"/>
+        <result column="object_owner" property="objectOwner"/>
+        <result column="object_name" property="objectName"/>
+        <result column="sql_bind" property="sqlBind"/>
+    </resultMap>
+	
+	
+	<select id="selectExcelPrintForDBLogList" parameterType="hashmap" resultMap="goAudit_maching2">
+	   select active_time, ip, user_name, instance_name, userhost, active_name, sql_text, object_owner, 
+	       object_name, sql_bind from ${sid} where active_time between to_date(#{sdate} || #{time1}, 'YYYY/MM/DD HH24:MI:SS') 
+	           and to_date(#{edate} || #{time2}, 'YYYY/MM/DD HH24:MI:SS') 
+			<if test="activeName != null">
+				and active_name = #{activeName} 
+			</if>
+			<if test="userName != null">
+				and user_name = #{userName} 
+			</if>
+			<if test="objectName != null">
+				and object_name like '%' || #{objectName} || '%' 
+			</if>
+			<if test="ipAddress != null">
+				and ip = #{ipAddress} 
+			</if>
+			<if test="searchOption != null">
+				<if test="searchText != null">
+					and ${searchOption} like '%' || #{searchText} || '%' 
+				</if>
+			</if>
+	           order by active_time desc
+	</select>
+	
+	<select id="selectDBLogByDay" parameterType="hashmap" resultMap="goAudit_maching2">
+	   select active_time, ip, user_name, instance_name, userhost, active_name, sql_text, object_owner, object_name, 
+	       sql_bind from ${table} where active_time between to_date(#{date}, 'yyyy-mm-dd') and 
+	       to_date(#{date}, 'yyyy-mm-dd') + 0.99999 order by active_time desc
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
